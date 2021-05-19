@@ -4,7 +4,8 @@ class CalcController
       {
            //aqui dentro eu vou tratar os parâmetros
            // recebidos pelo função ou metodo nessa caso o constructor
-
+           
+           this._operation = [] // o operation vai gardar a nossa operação
            this._locale = 'pt-BR'
            this._displayCalcEl =  document.querySelector('#display')
            this._dateEl = document.querySelector('#data')
@@ -67,6 +68,194 @@ class CalcController
                  */
       }
 
+      clearAll()
+      {
+          /**Esse metodo vai apagar tudo  */
+          this._operation = [];
+      }
+
+      clearEntry()
+      {
+          /** Esse Metodo so vai apagar a primera entrada */
+          this._operation.pop()
+      }
+
+      getLastOpertion()
+      {
+         return this._operation[this._operation.length - 1]
+         /**Retorna a ultima podição do array */
+      }
+
+      setLastOperation(value)
+      {
+        this._operation[this._operation.length-1] = value;
+      }
+
+      isOperator(value)
+      {
+
+        /*
+        * Nos podemos criar um array com sinais +,-,*,/,% 
+        * if( ['+','-','*','%','/'].indexOf(value) 
+        * aqui esta pergunta se existe ai dentro se ele
+        * encontra o valor ele vai trazer o indice do valor se não encontra vai se -1 
+        * // se o index of for maior que -1 então significa que é um operador  
+        * > -1 ){
+        * return true
+        * }else
+        * {
+        *   retur false
+        * }
+        */
+          
+       return (['+','-','*','%','/'].indexOf(value) > -1)
+              /** essa forma retorna o resultado de true e false de uma forma menos verbosa 
+               *  a condição que estaria no if seria essa com a logica de retor false e true 
+               * mais o javascript tem a inteligente de ja dar um retorno true ou false 
+               * dependendo da condição sem precisar explicitar o retorno
+              */
+  
+      }
+
+      addOperation(value /**esse é o cara do momento  */)
+      {
+          if(isNaN(this.getLastOpertion()))
+          /** o value é o cara do momento e aqui aqui no tratamento estamos falando do ultimo value que esta no array operation   */
+       // se não for um numero , então se não vier um numero vai dar verdadeiro entrando no bloco do se 
+          {
+                // vai entar no caso se for uma string
+
+                /** se for um operador um ponto   agente vai tratar diferente */
+                /** Agente vai ter que fazer uma validação se o ultimo for um operador 
+                 * e novo também for um operdaor então significa que estamos trocando */
+                  if(this.isOperator(value))
+                  /** se entra nesse if e se esse valor for um operador 
+                   * a gente pode criar um  metodo para fazer a pesquisa e com base na pesquisa faremos a troca  
+                   * */
+                  {
+                      this._operation[this._operation.length - 1]/** aqui estou pegando o valor do ultimo item  */ = value;
+                      /** aqui nes trecho de codigo estou pegando o valor do ultimo item e trocando pelo var recebido  */
+                  }else if(isNaN(value))
+                  {
+
+                    /**  */
+
+                      console.log(value)
+                      /**
+                       * se naõ pode ser um ponto
+                       *  ou igual 
+                       */
+                  }
+                  else
+                  {   
+                        
+                        /** se passar por tudo isso então é um numero então vai ser a primeri vez que ´e adicionado um numero então é so fazer um push */
+                        this._operation.push(value)
+
+                  }
+
+          }else // se não é um numero aqui é feito o tratamneto do numero no array
+          {
+
+
+            if(this.isOperator(value))
+            {
+              this._operation.push(value)
+            }
+            else
+            {
+              
+                  // numero
+              // se for um numero eu não quero adicionar mais um item no array eu quero concatenalo com o valor que ja estava 
+               /** um detalhe no metodo addOperation eu estou recebendo o numero da vez que o usuario digito  
+                * mais aqui eu não estou pegando o valor em questão e, eu to perguntando como é que esta la o ultimo antes 
+                * de fazer alguma coisa com valor que esta la , tem sinal , tem numero , tem um ponto */
+                let newValue = this.getLastOpertion().toString()/** vou peagar o ultimo valor que 
+                foi digitado  que esta noa array _opeartion e vou converter para string */ + value.toString() /** com o valor do momento  que veio metodo initbutton e tratada no metodo execButtons  */;
+                               
+               this.setLastOperation(parseInt(newValue))
+                /** aqui no novo valor agente não pode fazer um push agente tem que trocar a posição do ultimo  o valor  */
+                //esse novo valor vou adicionar no array 
+
+            }
+             
+          }
+           
+          console.log(this._operation)
+
+        }
+
+        
+      
+
+      setError()
+      {
+          this.displayCalc = 'Error';
+      }
+
+      execBtn(value)
+      {
+             switch(value)
+             {
+
+                 case 'ac':
+                  this.clearAll()
+                 break;
+
+                 case 'ce':
+                   this.clearEntry()
+                 break;
+                 
+                 case 'soma':
+                    this.addOperation('+');
+                 break;
+
+                 case 'subtracao':
+                    this.addOperation('-');
+                 break;
+
+                 case 'multiplicacao' :
+                    this.addOperation('*');
+                 break;
+
+                 case 'divisao' :
+                    this.addOperation('/');
+                 break;
+
+                 case 'porcento' :
+                    this.addOperation('%');
+                 break;
+
+                 case 'igual' :
+                    this.addOperation('+');
+                 break;
+
+                 case 'ponto':
+                    this.addOperation('.');
+                 break;
+
+                 case '0':
+                 case '1':
+                 case '2':
+                 case '3':
+                 case '4':
+                 case '5':
+                 case '6':
+                 case '7':
+                 case '8':
+                 case '9':
+                     this.addOperation(parseInt(value));
+                     break;
+
+
+                 default:
+                   this.setError();
+                 break;
+
+
+             }
+      }
+
       initButtonsEvents()
       {
           let buttons = document.querySelectorAll("#buttons > g, #parts > g");
@@ -84,9 +273,14 @@ class CalcController
             */
           buttons.forEach((btn)=>
             { 
+              
                 this.addEventListenerAll(btn ,'click drag ', e =>
                 {
-                    console.log(btn.className.baseVal.replace('btn-',''))
+                  
+                     let textBtn = btn.className.baseVal.replace('btn-','')
+
+                     this.execBtn(textBtn)
+                     // esse metodo vai executar a ação do buttão e o botão recebido é o resultado enviado 
                 })
 
                 this.addEventListenerAll(btn, 'mouseover mouseup mousedown' ,e=>
@@ -133,7 +327,7 @@ class CalcController
 
       set /** Toda vez que você criar um atributo privado voçe precisa do getter e do setter dele */ displayCalc(value)
       {
-         return this.displayCalcEl.innerHTML = value;
+         return this._displayCalcEl.innerHTML = value;
       }
 
       
