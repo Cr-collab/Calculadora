@@ -5,6 +5,8 @@ class CalcController
            //aqui dentro eu vou tratar os parâmetros
            // recebidos pelo função ou metodo nessa caso o constructor
            
+           this._lastOperator = ''
+           this._lastNumber = ''
            this._operation = [] // o operation vai gardar a nossa operação
            this._locale = 'pt-BR'
            this._displayCalcEl =  document.querySelector('#display')
@@ -49,6 +51,8 @@ class CalcController
            
 
         },1000)
+        this.setLastNumberToDisplay();
+
          
       }
 
@@ -72,12 +76,16 @@ class CalcController
       {
           /**Esse metodo vai apagar tudo  */
           this._operation = [];
+          this.setLastNumberToDisplay();
+
       }
 
       clearEntry()
       {
           /** Esse Metodo so vai apagar a primera entrada */
           this._operation.pop()
+          this.setLastNumberToDisplay();
+
       }
 
       getLastOpertion()
@@ -117,6 +125,105 @@ class CalcController
   
       }
 
+
+      pushOperation(value)
+      {
+        this._operation.push(value)
+
+        if(this._operation.length > 3 )
+        {
+            this.calc()
+        }
+      }
+
+      getResult()
+      {
+        console.log('getResult', this._operation)
+           return eval(this._operation.join(""))
+      }
+
+      calc()
+      {
+        let last = ''
+
+        this._lastOperator = this.getLastItem(true);
+
+        if(this._operation.length < 3)
+        {
+          let firstNumber =this._operation[0]
+          this._operation = [firstNumber, this._lastOperator,this._lastNumber]
+        }
+
+        if(this._operation.length > 3)
+        {
+           last = this._operation.pop()
+           this._lastNumber = this.getResult()
+        } else if(this._operation.length == 3)
+        {
+           
+          this._lastNumber = this.getLastItem(false)
+          
+        }
+        
+        console.log('Operador', this._lastOperator)
+        console.log('Numero',  this._lastNumber)
+        
+
+        let result= this.getResult()
+
+        if(last == '%')
+        {
+          result /= 100
+          this._operation = [result]
+        }
+        else
+        {
+        this._operation = [result]
+
+        if (last) this._operation.push(last)
+
+        }
+        this.setLastNumberToDisplay();
+
+      }
+
+
+      getLastItem(isOperator = true)
+      {
+        let lastItem;
+          for(let i = this._operation.length - 1; i >= 0; i-- )
+          {
+               
+                  if(this.isOperator(this._operation[i]) == isOperator)
+                  {
+                    lastItem = this._operation[i];
+                    
+                    break;
+                  }
+                  
+                
+        }
+
+        if(!lastItem)
+        {
+          lastItem = (isOperator) ? this._lastOperator : this._lastNumber
+        }
+
+      
+        return lastItem;
+          
+    
+      }
+
+      setLastNumberToDisplay()
+      {
+            let lastNumber = this.getLastItem(false);
+
+            
+            if(!lastNumber) lastNumber = 0
+            this.displayCalc = lastNumber;
+      }
+
       addOperation(value /**esse é o cara do momento  */)
       {
           if(isNaN(this.getLastOpertion()))
@@ -150,17 +257,18 @@ class CalcController
                   {   
                         
                         /** se passar por tudo isso então é um numero então vai ser a primeri vez que ´e adicionado um numero então é so fazer um push */
-                        this._operation.push(value)
+                        this.pushOperation(value)
+                        this.setLastNumberToDisplay();
 
                   }
 
           }else // se não é um numero aqui é feito o tratamneto do numero no array
           {
 
-
+              
             if(this.isOperator(value))
             {
-              this._operation.push(value)
+              this.pushOperation(value)
             }
             else
             {
@@ -176,6 +284,10 @@ class CalcController
                this.setLastOperation(parseInt(newValue))
                 /** aqui no novo valor agente não pode fazer um push agente tem que trocar a posição do ultimo  o valor  */
                 //esse novo valor vou adicionar no array 
+
+
+                //O mometo de atualizar o display
+                this.setLastNumberToDisplay();
 
             }
              
@@ -227,7 +339,7 @@ class CalcController
                  break;
 
                  case 'igual' :
-                    this.addOperation('+');
+                    this.calc();
                  break;
 
                  case 'ponto':
