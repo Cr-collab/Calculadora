@@ -4,7 +4,8 @@ class CalcController
       {
            //aqui dentro eu vou tratar os parâmetros
            // recebidos pelo função ou metodo nessa caso o constructor
-           
+           this._audio = new Audio('click.mp3');
+           this._audioOnOff = false;
            this._lastOperator = ''
            this._lastNumber = ''
            this._operation = [] // o operation vai gardar a nossa operação
@@ -15,11 +16,37 @@ class CalcController
            this._currentDate;
            this.initialize();
            this.initButtonsEvents();
+           this.initKeyBoard();
+           this.pasteFromClipboard();
+           this.toggleAudio();
            //como o construtor ele inicializado automaticamente o metodo vai ser chamadao aqui dentro
            
 
 
            // o comando intero this ele faz referencia ao objeto que foi instanciado 
+      }
+
+
+      pasteFromClipboard()
+      {
+           document.addEventListener('paste', e=>
+           {
+              let text = e.clipboardData.getData('Text');
+
+              this.displayCalc = parseFloat(text)
+           })
+      }
+
+      copyToClipboard()
+      {
+          let input = document.createElement('input');
+          input.value = this.displayCalc;
+          document.body.appendChild(input);
+          input.select();
+
+          document.execCommand("Copy")
+
+          input.remove();
       }
 
       initialize()
@@ -53,7 +80,107 @@ class CalcController
         },1000)
         this.setLastNumberToDisplay();
 
-         
+        document.querySelectorAll('.btn-ac').forEach(btn=>{
+
+          btn.addEventListener('dblclick', e=>{
+
+              this.toggleAudio();
+
+          });
+
+      });
+
+  }
+
+  toggleAudio(){
+
+      this._audioOnOff = !this._audioOnOff;
+
+  }
+
+  playAudio(){
+
+      if (this._audioOnOff) {
+
+          this._audio.currentTime = 0;
+          this._audio.play();
+
+      }
+
+      }
+
+
+      initKeyBoard()
+      {
+           document.addEventListener('keyup', e =>
+           {
+           
+            this.playAudio();
+             switch(e.key)
+             {
+
+                 case 'Escape':
+                  this.clearAll()
+                 break;
+
+                 case 'Backspace':
+                   this.clearEntry()
+                 break;
+                 
+                 case '+':
+                    this.addOperation(e.key);
+                 break;
+
+                 case '-':
+                    this.addOperation(e.key);
+                 break;
+
+                 case '*' :
+                    this.addOperation(e.key);
+                 break;
+
+                 case '/' :
+                    this.addOperation(e.key);
+                 break;
+
+                 case '%' :
+                    this.addOperation(e.key);
+                 break;
+
+                 case 'Enter' :
+                 case '=':
+                    this.calc();
+                 break;
+
+                 case ',':
+                 case '.':
+                    this.addDot();
+                 break;
+
+                 case '0':
+                 case '1':
+                 case '2':
+                 case '3':
+                 case '4':
+                 case '5':
+                 case '6':
+                 case '7':
+                 case '8':
+                 case '9':
+                     this.addOperation(parseInt(e.key));
+                     break;
+
+                     case 'c':
+
+                     if(e.ctrlKey) this.copyToClipboard();
+                     break;
+
+
+            
+                 
+             }
+
+           }); 
       }
 
       addEventListenerAll(element , events,fn)
@@ -76,6 +203,8 @@ class CalcController
       {
           /**Esse metodo vai apagar tudo  */
           this._operation = [];
+          this._lastNumber = ''
+          this._lastOperator = ''
           this.setLastNumberToDisplay();
 
       }
@@ -139,7 +268,17 @@ class CalcController
       getResult()
       {
         console.log('getResult', this._operation)
+
+         try{
            return eval(this._operation.join(""))
+         }
+         catch(e)
+         {
+           setTimeout(()=>{
+            this.setError();
+           }, 1)
+            
+         }
       }
 
       calc()
@@ -242,16 +381,6 @@ class CalcController
                   {
                       this._operation[this._operation.length - 1]/** aqui estou pegando o valor do ultimo item  */ = value;
                       /** aqui nes trecho de codigo estou pegando o valor do ultimo item e trocando pelo var recebido  */
-                  }else if(isNaN(value))
-                  {
-
-                    /**  */
-
-                      console.log(value)
-                      /**
-                       * se naõ pode ser um ponto
-                       *  ou igual 
-                       */
                   }
                   else
                   {   
@@ -281,7 +410,7 @@ class CalcController
                 let newValue = this.getLastOpertion().toString()/** vou peagar o ultimo valor que 
                 foi digitado  que esta noa array _opeartion e vou converter para string */ + value.toString() /** com o valor do momento  que veio metodo initbutton e tratada no metodo execButtons  */;
                                
-               this.setLastOperation(parseInt(newValue))
+               this.setLastOperation(newValue)
                 /** aqui no novo valor agente não pode fazer um push agente tem que trocar a posição do ultimo  o valor  */
                 //esse novo valor vou adicionar no array 
 
@@ -305,8 +434,27 @@ class CalcController
           this.displayCalc = 'Error';
       }
 
-      execBtn(value)
+      addDot()
       {
+          let lastOperation = this.getLastOpertion()
+
+          if(typeof lastOperation ==='string' && lastOperation.split("").indexOf('.') > -1) return;
+
+          if(this.isOperator(lastOperation) || !lastOperation)
+          {
+            this.pushOperation('0.')
+          }else
+          {
+             this.setLastOperation(lastOperation.toString() + '.')
+          }
+        
+
+          this.setLastNumberToDisplay()
+      }
+
+      execBtn(value)
+      {     
+           this.playAudio();
              switch(value)
              {
 
@@ -343,7 +491,7 @@ class CalcController
                  break;
 
                  case 'ponto':
-                    this.addOperation('.');
+                    this.addDot();
                  break;
 
                  case '0':
@@ -439,6 +587,11 @@ class CalcController
 
       set /** Toda vez que você criar um atributo privado voçe precisa do getter e do setter dele */ displayCalc(value)
       {
+        if(value.toString().length > 10)
+        {
+          this.setError();
+          return false;
+        }
          return this._displayCalcEl.innerHTML = value;
       }
 

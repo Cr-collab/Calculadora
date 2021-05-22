@@ -56,15 +56,65 @@
  * }
  * 
  * C04 - Manipulando o Dom 
+ *  class CalcController {
+ *
+ *      constructor(){
+
+            this._displayCalc = "0";
+            this._currentDate;
+            this.initialize();
+
+        }
+
+        initialize(){
+            colocamos o resultado do query selector dentro de variaveis para podemos 
+            manipular eles. 
+            let displayCalcEl = document.querySelector("#display");
+            let dateEl = document.querySelector("#data");
+            let timeEl = document.querySelector("#hora");
+
+            o display a data e a hora estão nessas três variaveis a partir de agora o JS entende o javascript
+
+            displayCalcEl.innerHTML = "4567";
+            o innerHTML é uma propriedade  que toda vez que trabalhamos com o dom trabalhamos com ela pega 
+            a informação passada e coloca dentro  d display em formato html .
+            dateEl.innerHTML = "15/04/2021";
+            timeEl.innerHTML = "11:14";
+            nos estamos mudando html via javascript 
+
+        }
+
+        get displayCalc(){
+
+            return this._displayCalc;
+
+        }
+
+        set displayCalc(valor){
+
+            this._displayCalc = valor;
+
+        }
+
+        get currentDate(){
+
+            return this._currentDate;
+
+        }
+
+        set currentDate(valor){
+
+            this._currentDate = valor;
+
+        }
+
+    }
+ * 
+ * 
+ * 
+ * 
  *  
- * class CalcController
- * {
- *     
- *     constructor()
- *     {
- *             this.d
- *      }
- * }
+ * 
  * 
  * 
  * 
