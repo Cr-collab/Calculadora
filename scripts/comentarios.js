@@ -1667,22 +1667,31 @@ class CalcController {
         this._operation = [result, last];
 
         this.setLastNumberToDisplay();
+        \---------------------------/
+                   esse metodo tem como ponto alto
+                   sempre mostra o ultimo numero no display
+
 
     }
 
     setLastNumberToDisplay(){
+   esse metodo tem como ponto alto
+   sempre mostra o ultimo numero no display
 
         let lastNumber;
+        \=> precisamos descobri o ultimo numero.
 
         for (let i = this._operation.length-1; i >= 0; i--){
                  ||                               ||    ||=> repetição
                  ||                               ||
                  ||                               ==> condição
                  ===> valor inicial 
+                      começa no total de itens 
+                      do array.
 
 
             if (!this.isOperator(this._operation[i])) {
-                se não for um operador  ´porque eu achei um numero
+                se não for um operador  porque eu achei um numero
                 então coloca esse numero na minha variavel.
                 lastNumber = this._operation[i];
 
@@ -1714,6 +1723,10 @@ class CalcController {
                 this.pushOperation(value);
 
                 this.setLastNumberToDisplay();
+                \---------------------------/
+                   esse metodo tem como ponto alto
+                   sempre mostra o ultimo numero no display
+
 
             }
 
@@ -1730,6 +1743,9 @@ class CalcController {
                 this.setLastOperation(parseInt(newValue));
 
                 this.setLastNumberToDisplay();
+                \---------------------------/
+                   esse metodo tem como ponto alto
+                   sempre mostra o ultimo numero no display
 
             }
 
@@ -1889,4 +1905,1432 @@ class CalcController {
 
 }
 
+  C13 - O botão porcento
+
+
+class CalcController {
+
+    constructor(){
+
+        this._operation = [];
+        this._locale = 'pt-BR';
+        this._displayCalcEl = document.querySelector("#display");
+        this._dateEl = document.querySelector("#data");
+        this._timeEl = document.querySelector("#hora");
+        this._currentDate;
+        this.initialize();
+        this.initButtonsEvents();
+
+    }
+
+    initialize(){
+
+        this.setDisplayDateTime()
+
+        setInterval(()=>{
+
+            this.setDisplayDateTime();
+
+        }, 1000);
+
+        this.setLastNumberToDisplay();
+
+    }
+
+    addEventListenerAll(element, events, fn){
+
+        events.split(' ').forEach(event => {
+
+            element.addEventListener(event, fn, false);
+
+        })
+    
+    }
+
+    clearAll(){
+
+        this._operation = [];
+
+        this.setLastNumberToDisplay();
+
+    }
+
+    clearEntry(){
+
+        this._operation.pop();
+
+        this.setLastNumberToDisplay();
+
+    }
+
+    getLastOperation(){
+
+        return this._operation[this._operation.length-1];
+
+    }
+
+    setLastOperation(value){
+
+        this._operation[this._operation.length-1] = value;
+
+    }
+
+    isOperator(value){
+
+        return (['+', '-', '*', '%', '/'].indexOf(value) > -1);
+
+    }
+
+    pushOperation(value){
+
+        this._operation.push(value);
+
+        if (this._operation.length > 3) {
+
+            this.calc();
+
+        }
+
+    }
+
+    calc(){
+
+        o ultimo é o simbolo de porcentagem,
+        AGENETE TÉM QUE FAZER ESSA VALIDAÇÃO
+
+        let last = '';
+
+        if (this._operation.length > 3) 
+        \-----------------------------/
+        se a operação for maior que três
+        indice eu bou tirar o ultimo indice.
+        {
+
+            last = this._operation.pop();
+
+        }
+        
+        let result = eval(this._operation.join(""));
+        
+
+        if (last == '%')
+        \--------------/
+        SE o  ultimo é igual ao simbolo de porcentagem.
+        {
+         
+            result /= 100;
+            aqui vamos dividir por cem .
+
+            this._operation = [result];
+            aqui so vamos atualizar o result por que já usamo o porcento 
+            para calculo.
+
+        } else {
+           se não faz isso
+            this._operation = [result];
+
+            if (last) this._operation.push(last);
+            se last não for vazio agente faz o push do last
+
+        }
+
+        this.setLastNumberToDisplay();
+
+    }
+
+    setLastNumberToDisplay(){
+
+        let lastNumber;
+
+        for (let i = this._operation.length-1; i >= 0; i--){
+
+            if (!this.isOperator(this._operation[i])) {
+
+                lastNumber = this._operation[i];
+
+                break;
+
+            }
+
+        }
+
+        if (!lastNumber) lastNumber = 0;
+
+        this.displayCalc = lastNumber;
+
+    }
+
+    addOperation(value){
+
+
+        if (isNaN(this.getLastOperation())) {
+
+            if (this.isOperator(value)) {
+
+                this.setLastOperation(value);
+
+            } else if (isNaN(value)){
+
+                console.log("outra coisa",value);
+
+            } else {
+
+                this.pushOperation(value);
+
+                this.setLastNumberToDisplay();
+
+            }
+
+        } else {
+
+            if (this.isOperator(value)){
+
+                this.pushOperation(value);
+
+            } else {
+
+                let newValue = this.getLastOperation().toString() + value.toString();
+
+                this.setLastOperation(parseInt(newValue));
+
+                this.setLastNumberToDisplay();
+
+            }
+
+        }
+
+    }
+
+    setError(){
+
+        this.displayCalc = "Error";
+        
+    }
+
+    execBtn(value){
+
+        switch (value) {
+
+            case 'ac':
+                this.clearAll();
+                break;
+
+            case 'ce':
+                this.clearEntry();
+                break;
+
+            case 'soma':
+                this.addOperation('+');
+                break;
+
+            case 'subtracao':
+                this.addOperation('-');
+                break;
+
+            case 'divisao':
+                this.addOperation('/');
+                break;
+
+            case 'multiplicacao':
+                this.addOperation('*');
+                break;
+
+            case 'porcento':
+                this.addOperation('%');
+                break;
+
+            case 'igual':
+                ele vai calcular a expressão é so mandar 
+                this.calc();
+                para esse metodo para fazer o resultado.
+                break;
+
+            case 'ponto':
+                this.addOperation('.');
+                break;
+
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                this.addOperation(parseInt(value));
+                break;
+
+            default:
+                this.setError();
+                break;
+
+        }
+
+    }
+
+    initButtonsEvents(){
+
+        let buttons = document.querySelectorAll("#buttons > g, #parts > g");
+
+        buttons.forEach((btn, index)=>{
+
+            this.addEventListenerAll(btn, "click drag", e => {
+
+                let textBtn = btn.className.baseVal.replace("btn-","");
+
+                this.execBtn(textBtn);
+
+            })
+
+            this.addEventListenerAll(btn, "mouseover mouseup mousedown", e => {
+
+                btn.style.cursor = "pointer";
+
+            })
+
+        })
+
+    }
+
+    setDisplayDateTime(){
+
+        this.displayDate = this.currentDate.toLocaleDateString(this._locale, {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        });
+        this.displayTime = this.currentDate.toLocaleTimeString(this._locale);
+
+    }
+
+    get displayTime(){
+
+        return this._timeEl.innerHTML;
+
+    }
+
+    set displayTime(value){
+
+        return this._timeEl.innerHTML = value;
+
+    }
+
+    get displayDate(){
+
+        return this._dateEl.innerHTML;
+
+    }
+
+    set displayDate(value){
+
+        return this._dateEl.innerHTML = value;
+
+    }
+
+    get displayCalc(){
+
+        return this._displayCalcEl.innerHTML;
+
+    }
+
+    set displayCalc(value){
+
+        this._displayCalcEl.innerHTML = value;
+
+    }
+
+    get currentDate(){
+
+        return new Date();
+
+    }
+
+    set currentDate(value){
+
+        this._currentDate = value;
+
+    }
+
+}
+
+ C14 - Clikando mais de uma vez no botão igual
+
+  class CalcController {
+
+    constructor(){
+
+        this._lastOperator = '';
+        this._lastNumber = '';
+
+        this._operation = [];
+        this._locale = 'pt-BR';
+        this._displayCalcEl = document.querySelector("#display");
+        this._dateEl = document.querySelector("#data");
+        this._timeEl = document.querySelector("#hora");
+        this._currentDate;
+        this.initialize();
+        this.initButtonsEvents();
+
+    }
+
+    initialize(){
+
+        this.setDisplayDateTime()
+
+        setInterval(()=>{
+
+            this.setDisplayDateTime();
+
+        }, 1000);
+
+        this.setLastNumberToDisplay();
+
+    }
+
+    addEventListenerAll(element, events, fn){
+
+        events.split(' ').forEach(event => {
+
+            element.addEventListener(event, fn, false);
+
+        })
+    
+    }
+
+    clearAll(){
+
+        this._operation = [];
+
+        this.setLastNumberToDisplay();
+
+    }
+
+    clearEntry(){
+
+        this._operation.pop();
+
+        this.setLastNumberToDisplay();
+
+    }
+
+    getLastOperation(){
+
+        return this._operation[this._operation.length-1];
+
+    }
+
+    setLastOperation(value){
+
+        this._operation[this._operation.length-1] = value;
+
+    }
+
+    isOperator(value){
+
+        return (['+', '-', '*', '%', '/'].indexOf(value) > -1);
+
+    }
+
+    pushOperation(value){
+
+        this._operation.push(value);
+
+        if (this._operation.length > 3) {
+
+            this.calc();
+
+        }
+
+    }
+
+    getResult(){
+    ele simplesmente vai fazer um eval da operação 
+
+
+        return eval(this._operation.join(""));
+
+    }
+
+    calc(){
+
+        1 caso se o usuario apertar duas vezes e ultima posição for um operador = 
+        ele garda o ultimo operador e o valor do resultado e toda vez que eu 
+        apertar no igual ele vai fazer a operção com o resultado .
+
+        2 caso se o usuario apertar duas vezes e ultima posição for um operador =
+        caso o ultima posiçao no array for um numero e o penultima for um operador 
+        e clickar no igual mais de uma vez, vai pegar o rsultado e  pegar o penultimo 
+        operador e o ultimo posição e fazer a operação com o ultimo valor encima do resultado 
+
+        let last = '';
+        
+        this._lastOperator = this.getLastItem();
+        e gardar o ultimo operador eu chamo esse metodo 
+        que vai buscar o ultimo item e passo nada por padrão.
+
+        if (this._operation.length < 3)
+        se   a quantidade do nosso array for menor que três
+        {
+
+            let firstItem = this._operation[0];
+            pegamos o primeiro item antes de fazer um novo array.
+
+
+            this._operation = [firstItem, this._lastOperator, this._lastNumber];
+          aqui no novo array passamos o item que salvmos na variavel de cima
+           e no sehundo indice colocamos o operador , e no ultimo item que é nosso lastNumber 
+        }
+
+        if (this._operation.length > 3) {
+
+            last = this._operation.pop();
+
+            this._lastNumber = this.getResult();
+            gardar o ultimo numero
+
+        } else if (this._operation.length == 3) {
+                se essa operation for igual 3 eu gardo o ultimo numero.
+            this._lastNumber = this.getLastItem(false);
+            gardar o ultimo numero
+
+        }
+        
+        let result = this.getResult();
+
+        if (last == '%') {
+
+            result /= 100;
+
+            this._operation = [result];
+
+        } else {
+
+            this._operation = [result];
+
+            if (last) this._operation.push(last);
+
+        }
+
+        this.setLastNumberToDisplay();
+
+    }
+
+    getLastItem(isOperator = true)
+     vou pegar o ultino item por pradão 
+     ele sempre vai trazer para min o ultimo operador 
+    {
+
+        let lastItem;
+        ultimo item
+
+        for (let i = this._operation.length-1; i >= 0; i--){
+
+            if (this.isOperator(this._operation[i]) == isOperator) 
+               O resultado do meu isOperator tem que ser igual ao meu parametro isOperator
+            {
+    
+                lastItem = this._operation[i];
+    
+                break;
+    
+            }
+
+        }
+
+        if (!lastItem) {
+         se não encontrar gaca 
+            lastItem = (isOperator) ? this._lastOperator : this._lastNumber;
+            o last item = for operator então  agente quer o ultimo operador se não o ultimo numero
+
+        }
+
+        return lastItem;
+
+    }
+
+    setLastNumberToDisplay(){
+
+        let lastNumber = this.getLastItem(false);
+
+        if (!lastNumber) lastNumber = 0;
+
+        this.displayCalc = lastNumber;
+
+    }
+
+    addOperation(value){
+
+
+        if (isNaN(this.getLastOperation())) {
+
+            if (this.isOperator(value)) {
+
+                this.setLastOperation(value);
+
+            } else if (isNaN(value)){
+
+                console.log("outra coisa",value);
+
+            } else {
+
+                this.pushOperation(value);
+
+                this.setLastNumberToDisplay();
+
+            }
+
+        } else {
+
+            if (this.isOperator(value)){
+
+                this.pushOperation(value);
+
+            } else {
+
+                let newValue = this.getLastOperation().toString() + value.toString();
+
+                this.setLastOperation(parseInt(newValue));
+
+                this.setLastNumberToDisplay();
+
+            }
+
+        }
+
+    }
+
+    setError(){
+
+        this.displayCalc = "Error";
+        
+    }
+
+    execBtn(value){
+
+        switch (value) {
+
+            case 'ac':
+                this.clearAll();
+                break;
+
+            case 'ce':
+                this.clearEntry();
+                break;
+
+            case 'soma':
+                this.addOperation('+');
+                break;
+
+            case 'subtracao':
+                this.addOperation('-');
+                break;
+
+            case 'divisao':
+                this.addOperation('/');
+                break;
+
+            case 'multiplicacao':
+                this.addOperation('*');
+                break;
+
+            case 'porcento':
+                this.addOperation('%');
+                break;
+
+            case 'igual':
+                this.calc();
+                break;
+
+            case 'ponto':
+                this.addOperation('.');
+                break;
+
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                this.addOperation(parseInt(value));
+                break;
+
+            default:
+                this.setError();
+                break;
+
+        }
+
+    }
+
+    initButtonsEvents(){
+
+        let buttons = document.querySelectorAll("#buttons > g, #parts > g");
+
+        buttons.forEach((btn, index)=>{
+
+            this.addEventListenerAll(btn, "click drag", e => {
+
+                let textBtn = btn.className.baseVal.replace("btn-","");
+
+                this.execBtn(textBtn);
+
+            })
+
+            this.addEventListenerAll(btn, "mouseover mouseup mousedown", e => {
+
+                btn.style.cursor = "pointer";
+
+            })
+
+        })
+
+    }
+
+    setDisplayDateTime(){
+
+        this.displayDate = this.currentDate.toLocaleDateString(this._locale, {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        });
+        this.displayTime = this.currentDate.toLocaleTimeString(this._locale);
+
+    }
+
+    get displayTime(){
+
+        return this._timeEl.innerHTML;
+
+    }
+
+    set displayTime(value){
+
+        return this._timeEl.innerHTML = value;
+
+    }
+
+    get displayDate(){
+
+        return this._dateEl.innerHTML;
+
+    }
+
+    set displayDate(value){
+
+        return this._dateEl.innerHTML = value;
+
+    }
+
+    get displayCalc(){
+
+        return this._displayCalcEl.innerHTML;
+
+    }
+
+    set displayCalc(value){
+
+        this._displayCalcEl.innerHTML = value;
+
+    }
+
+    get currentDate(){
+
+        return new Date();
+
+    }
+
+    set currentDate(value){
+
+        this._currentDate = value;
+
+    }
+
+}
+
+
+
+C15 - Botão ponto
+class CalcController {
+
+    constructor(){
+
+        this._lastOperator = '';
+        this._lastNumber = '';
+
+        this._operation = [];
+        this._locale = 'pt-BR';
+        this._displayCalcEl = document.querySelector("#display");
+        this._dateEl = document.querySelector("#data");
+        this._timeEl = document.querySelector("#hora");
+        this._currentDate;
+        this.initialize();
+        this.initButtonsEvents();
+
+    }
+
+    initialize(){
+
+        this.setDisplayDateTime()
+
+        setInterval(()=>{
+
+            this.setDisplayDateTime();
+
+        }, 1000);
+
+        this.setLastNumberToDisplay();
+
+    }
+
+    addEventListenerAll(element, events, fn){
+
+        events.split(' ').forEach(event => {
+
+            element.addEventListener(event, fn, false);
+
+        })
+    
+    }
+
+    clearAll(){
+
+        this._operation = [];
+        como nessa parte estamos soó limpando  o array 
+        agora precisamos limpar as variveis que crimos para tratar 
+        o ponto e outras cois.
+        this._lastNumber = '';
+        this._lastOperator = '';
+
+        this.setLastNumberToDisplay();
+
+    }
+
+    clearEntry(){
+
+        this._operation.pop();
+
+        this.setLastNumberToDisplay();
+
+    }
+
+    getLastOperation(){
+
+        return this._operation[this._operation.length-1];
+
+    }
+
+    setLastOperation(value){
+
+        this._operation[this._operation.length-1] = value;
+
+    }
+
+    isOperator(value){
+
+        return (['+', '-', '*', '%', '/'].indexOf(value) > -1);
+
+    }
+
+    pushOperation(value){
+
+        this._operation.push(value);
+
+        if (this._operation.length > 3) {
+
+            this.calc();
+
+        }
+
+    }
+
+    getResult(){
+
+
+
+        return eval(this._operation.join(""));
+
+    }
+
+    calc(){
+
+        let last = '';
+        
+        this._lastOperator = this.getLastItem();
+
+        if (this._operation.length < 3) {
+
+            let firstItem = this._operation[0];
+
+            this._operation = [firstItem, this._lastOperator, this._lastNumber];
+
+        }
+
+        if (this._operation.length > 3) {
+
+            last = this._operation.pop();
+
+            this._lastNumber = this.getResult();
+
+        } else if (this._operation.length == 3) {
+
+            this._lastNumber = this.getLastItem(false);
+
+        }
+        
+        let result = this.getResult();
+
+        if (last == '%') {
+
+            result /= 100;
+
+            this._operation = [result];
+
+        } else {
+
+            this._operation = [result];
+
+            if (last) this._operation.push(last);
+
+        }
+
+        this.setLastNumberToDisplay();
+
+    }
+
+    getLastItem(isOperator = true){
+
+        let lastItem;
+
+        for (let i = this._operation.length-1; i >= 0; i--){
+
+            if (this.isOperator(this._operation[i]) == isOperator) {
+    
+                lastItem = this._operation[i];
+    
+                break;
+    
+            }
+
+        }
+
+        if (!lastItem) {
+
+            lastItem = (isOperator) ? this._lastOperator : this._lastNumber;
+
+        }
+
+        return lastItem;
+
+    }
+
+    setLastNumberToDisplay(){
+
+        let lastNumber = this.getLastItem(false);
+
+        if (!lastNumber) lastNumber = 0;
+
+        this.displayCalc = lastNumber;
+
+    }
+
+    addOperation(value){
+
+
+        if (isNaN(this.getLastOperation())) {
+
+            if (this.isOperator(value)) {
+
+                this.setLastOperation(value);
+
+            } else {
+
+                this.pushOperation(value);
+
+                this.setLastNumberToDisplay();
+
+            }
+
+        } else {
+
+            if (this.isOperator(value)){
+
+                this.pushOperation(value);
+
+            } else {
+
+                let newValue = this.getLastOperation().toString() + value.toString();
+
+                this.setLastOperation(parseFloat(newValue));
+
+                this.setLastNumberToDisplay();
+
+            }
+
+        }
+
+    }
+
+    setError(){
+
+        this.displayCalc = "Error";
+        
+    }
+
+    addDot(){
+
+        let lastOperation = this.getLastOperation();
+        qual é a ultima operação
+
+        if (this.isOperator(lastOperation) || !lastOperation) 
+        \---------------------------------------------------/
+        se for um operador ou for undefined
+        {
+
+            this.pushOperation('0.');
+            fazer um push na operção de 0.
+
+
+        } else {
+
+            this.setLastOperation(lastOperation.toString() + '.');
+            eu quero subscrever  aminha ultima operação, pegar a ulrima operção convertela para string 
+            e concatenala com o ponto.
+
+
+        }
+
+        após isso é so atualizar a tela
+
+        this.setLastNumberToDisplay();
+        
+    }
+
+    execBtn(value){
+
+        switch (value) {
+
+            case 'ac':
+                this.clearAll();
+                break;
+
+            case 'ce':
+                this.clearEntry();
+                break;
+
+            case 'soma':
+                this.addOperation('+');
+                break;
+
+            case 'subtracao':
+                this.addOperation('-');
+                break;
+
+            case 'divisao':
+                this.addOperation('/');
+                break;
+
+            case 'multiplicacao':
+                this.addOperation('*');
+                break;
+
+            case 'porcento':
+                this.addOperation('%');
+                break;
+
+            case 'igual':
+                this.calc();
+                break;
+
+            case 'ponto':
+                this.addDot();
+                esse metodo vai adicionar o  ponto.
+                break;
+
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                this.addOperation(parseInt(value));
+                break;
+
+            default:
+                this.setError();
+                break;
+
+        }
+
+    }
+
+    initButtonsEvents(){
+
+        let buttons = document.querySelectorAll("#buttons > g, #parts > g");
+
+        buttons.forEach((btn, index)=>{
+
+            this.addEventListenerAll(btn, "click drag", e => {
+
+                let textBtn = btn.className.baseVal.replace("btn-","");
+
+                this.execBtn(textBtn);
+
+            })
+
+            this.addEventListenerAll(btn, "mouseover mouseup mousedown", e => {
+
+                btn.style.cursor = "pointer";
+
+            })
+
+        })
+
+    }
+
+    setDisplayDateTime(){
+
+        this.displayDate = this.currentDate.toLocaleDateString(this._locale, {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        });
+        this.displayTime = this.currentDate.toLocaleTimeString(this._locale);
+
+    }
+
+    get displayTime(){
+
+        return this._timeEl.innerHTML;
+
+    }
+
+    set displayTime(value){
+
+        return this._timeEl.innerHTML = value;
+
+    }
+
+    get displayDate(){
+
+        return this._dateEl.innerHTML;
+
+    }
+
+    set displayDate(value){
+
+        return this._dateEl.innerHTML = value;
+
+    }
+
+    get displayCalc(){
+
+        return this._displayCalcEl.innerHTML;
+
+    }
+
+    set displayCalc(value){
+
+        this._displayCalcEl.innerHTML = value;
+
+    }
+
+    get currentDate(){
+
+        return new Date();
+
+    }
+
+    set currentDate(value){
+
+        this._currentDate = value;
+
+    }
+
+}
+
+c16 - Bugs com ponto 
+  
+ addOperation(value){
+
+
+        if (isNaN(this.getLastOperation())) {
+
+            if (this.isOperator(value)) {
+
+                this.setLastOperation(value);
+
+            } else {
+
+                this.pushOperation(value);
+
+                this.setLastNumberToDisplay();
+
+            }
+
+        } else {
+
+            if (this.isOperator(value)){
+
+                this.pushOperation(value);
+
+            } else {
+
+                let newValue = this.getLastOperation().toString() + value.toString();
+
+                this.setLastOperation(newValue);
+                é nessesario tira o parseFloat do metodo 
+
+                this.setLastNumberToDisplay();
+
+            }
+
+        }
+
+    }
+
+    
+    addDot(){
+
+        let lastOperation = this.getLastOperation();
+
+        if (typeof lastOperation === 'string' && lastOperation.split('').indexOf('.') > -1) return;
+        se ela existe e se  o tipo lastOperation é identico a string  e faça um split de lastOperation e
+         apos faça uma pesquisa vendo se existe um ponto ai dentro  caso seja maior que  -1 é por   que existe entaão da return.    
+        if (this.isOperator(lastOperation) || !lastOperation) {
+
+            this.pushOperation('0.');
+
+        } else {
+
+            this.setLastOperation(lastOperation.toString() + '.');
+
+        }
+
+        this.setLastNumberToDisplay();
+        
+    }
+
+    C17 - eventos de teclado 
+
+     initKeyboard() {
+
+        document.addEventListener('keyup', e=> {
+            ||         ||             ||    \\> O que eu devo fazer
+            ||         ||             ==> O evento que você quer.
+            ||         => esse método recebe
+            ||          dois pârametros que são ?
+            ||==> o foco é no documento.   
+
+            switch (e.key) {
+                      \=> vai pegar o valor da tecla
+                case 'Escape':
+                    this.clearAll();
+                    break; 
+    
+                case 'Backspace':
+                    this.clearEntry();
+                    break;
+    
+                case '+':    
+                case '-':    
+                case '*':    
+                case '/':    
+                case '%':
+                    this.addOperation(e.key);
+                    break;
+    
+                case 'Enter':
+                case '=':
+                    this.calc();
+                    break;
+    
+                case '.':
+                case ',':
+                    this.addDot();
+                    break;
+    
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    this.addOperation(parseInt(e.key));
+                    break;
+    
+            }
+
+        })
+
+    }
+ 
+
+    C17 - Control C e Control V
+
+     pasteFromClipboard()
+               \-----/
+          colar da Area de Trasferencia
+     {
+
+        document.addEventListener
+        aqui estamos que esta escutando para ver se alfuem quer colar
+        ('paste', e=>{
+
+            let text = e.clipboardData.getData('Text');
+                 aui estamos pegando o valor que foi colado
+
+            this.displayCalc = parseFloat(text);
+             aqui estamos mostrando o valor no display
+
+        });
+
+    }
+
+    copyToClipboard()
+    Copiando Area de Trasferencia 
+    {
+
+        let input = document.createElement('input');
+        como estamos trabalhando vamos criar input , ai vamos passar o
+        valor do nosso display e depois acessar esse input para depois 
+        copiar.
+
+        input.value = this.displayCalc;
+        aqui estamos colocando o valor do nosso display dentro do nosso input
+
+        document.body.appendChild(input);
+        aqui o nosso inpu  vai abraçar o body 
+
+        input.select();
+        acessar o conteudo dele 
+
+        document.execCommand("Copy");
+        coomando para copiar a informação do input.
+
+        input.remove();
+        aqui o inpunt não ficara invisivel.
+
+    }
+
+     initKeyboard() {
+
+        document.addEventListener('keyup', e=> {
+
+            switch (e.key) {
+
+                case 'Escape':
+                    this.clearAll();
+                    break;
+    
+                case 'Backspace':
+                    this.clearEntry();
+                    break;
+    
+                case '+':    
+                case '-':    
+                case '*':    
+                case '/':    
+                case '%':
+                    this.addOperation(e.key);
+                    break;
+    
+                case 'Enter':
+                case '=':
+                    this.calc();
+                    break;
+    
+                case '.':
+                case ',':
+                    this.addDot();
+                    break;
+    
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    this.addOperation(parseInt(e.key));
+                    break;
+
+                case 'c':
+                    if (e.ctrlKey) this.copyToClipboard();
+                    break;
+    
+            }
+
+        })
+
+    }
+
+    C18 - Api de audio
+
+    constructor(){
+
+        this._audio = new Audio('click.mp3');
+        this._audioOnOff = false;
+        this._lastOperator = '';
+        this._lastNumber = '';
+
+        this._operation = [];
+        this._locale = 'pt-BR';
+        this._displayCalcEl = document.querySelector("#display");
+        this._dateEl = document.querySelector("#data");
+        this._timeEl = document.querySelector("#hora");
+        this._currentDate;
+        this.initialize();
+        this.initButtonsEvents();
+        this.initKeyboard();
+
+    }
+
+
+    initialize(){
+
+        this.setDisplayDateTime()
+
+        setInterval(()=>{
+
+            this.setDisplayDateTime();
+
+        }, 1000);
+
+        this.setLastNumberToDisplay();
+        this.pasteFromClipboard();
+
+        document.querySelectorAll('.btn-ac').forEach(btn=>{
+
+            btn.addEventListener('dblclick', e=>{
+
+                this.toggleAudio();
+
+            });
+
+        });
+
+    }
+
+    toggleAudio(){
+
+        this._audioOnOff = !this._audioOnOff;
+
+    }
  */
